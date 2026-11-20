@@ -1,0 +1,88 @@
+[English](README.md) | **한국어**
+
+# 🐱 Mood Cat
+
+> "행복함", "배고픔"처럼 지금 기분이나 상태를 입력하면 고양이 밈이 나오는 미니 앱
+
+거창한 건 없어요. 공부하면서 재미있는 걸 만들어 보는 게 이 프로젝트의 전부예요.
+
+## 데모
+
+<!-- TODO: 실행 화면 GIF 또는 스크린샷 -->
+
+```
+입력:  "시험 망했어 ㅠㅠ"
+감정:  sad
+캡션:  "괜찮아, 나도 츄르 놓쳤어"
+이미지: (슬픈 고양이 GIF)
+```
+
+## 왜 만들었나요?
+
+수업에서 배운 LangChain Runnable / LCEL이 이론 위주라서 잘 와닿지 않았어요.
+그래서 작은 프로젝트를 직접 조립하면서 이해해 보려고 만들었어요.
+그리고 고양이는 최고고, 고양이 밈은 웃기니까요!
+
+### 이 프로젝트로 연습하는 개념
+
+- `A | B | C` 파이프로 체인 조립하기 (LCEL)
+- `@chain`, `invoke()`, `batch()`
+- `RunnablePassthrough.assign()`으로 이전 단계의 값 유지하기
+- `.with_retry()`, `.with_fallbacks()`로 실패에 대비하기
+- `.stream()`
+
+## 동작 구조
+
+```
+입력 텍스트
+  → [감정 분류]  자유로운 문장을 정해진 감정 라벨 하나로 (LLM)
+  → [캡션 생성]  고양이 말투로 한 줄 (LLM)
+  → [GIF 검색]   "{감정} cat"으로 GIPHY 검색 (API)
+  → { text, mood, caption, image_url }
+```
+
+LLM은 감정 분류와 캡션 작성에만 써요. 이미지는 생성하지 않고 API에서 가져오기 때문에 결과가 안정적이고 비용이 적어요.
+
+### 실패해도 고양이는 나온다
+
+| 단계 | 실패하면 |
+|---|---|
+| LLM 감정 분류 | 3번 재시도 → 키워드 분류기 |
+| LLM 캡션 | 3번 재시도 → "...냥? (서버가 낮잠 중)" |
+| GIPHY | 3번 재시도 → CATAAS 이미지 |
+
+## 기술 스택
+
+- Python, LangChain (`langchain-core`, `langchain-openai`)
+- OpenAI API
+- GIPHY API, CATAAS
+
+## 실행 방법
+
+<!-- TODO: Step 0에서 채우기 (가상환경, 패키지 설치, .env 설정) -->
+
+## 진행 상황
+
+- [ ] Step 0. 환경 준비
+- [ ] Step 1. 키워드 감정 분류기 (LLM 없이)
+- [ ] Step 2. LLM 감정 분류기
+- [ ] Step 3. 감정 + 캡션 + GIF 합치기
+- [ ] Step 4. retry / fallback
+- [ ] Step 5. (선택) 캡션 스트리밍
+- [ ] Step 6. (선택) 블로그 데모
+- [ ] Step 7. 회고
+
+## 배운 점
+
+<!-- TODO: Step 7에서 채우기 -->
+
+## 참고
+
+- KANT AX 부트캠프 11/20 LangChain Runnable 수업을 바탕으로 한 개인 학습 프로젝트예요.
+- [프로젝트 기획서](https://mjlee0914.github.io/coding/mood-cat/)
+- [LangChain 공식 문서](https://python.langchain.com/)
+
+## Credits
+
+- GIF: [GIPHY](https://giphy.com/) (Powered by GIPHY)
+- 고양이 사진: [CATAAS](https://cataas.com/)
