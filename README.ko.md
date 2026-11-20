@@ -45,11 +45,11 @@ LLM은 감정 분류와 캡션 작성에만 써요. 이미지는 생성하지 �
 
 ### 실패해도 고양이는 나온다
 
-| 단계 | 실패하면 |
-|---|---|
-| LLM 감정 분류 | 3번 재시도 → 키워드 분류기 |
-| LLM 캡션 | 3번 재시도 → "...냥? (서버가 낮잠 중)" |
-| GIPHY | 3번 재시도 → CATAAS 이미지 |
+| 단계          | 실패하면                               |
+| ------------- | -------------------------------------- |
+| LLM 감정 분류 | 3번 재시도 → 키워드 분류기             |
+| LLM 캡션      | 3번 재시도 → "...냥? (서버가 낮잠 중)" |
+| GIPHY         | 3번 재시도 → CATAAS 이미지             |
 
 ## 기술 스택
 
@@ -59,11 +59,36 @@ LLM은 감정 분류와 캡션 작성에만 써요. 이미지는 생성하지 �
 
 ## 실행 방법
 
-<!-- TODO: Step 0에서 채우기 (가상환경, 패키지 설치, .env 설정) -->
+**필요한 것:** Python 3.11 이상 (3.13에서 개발), OpenAI API 키, GIPHY API 키
+
+```bash
+# 1. 레포 받기
+git clone https://github.com/mjlee0914/mood-cat.git
+cd mood-cat
+
+# 2. 가상환경 만들고 켜기
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. 패키지 설치
+pip install -r requirements.txt
+
+# 4. API 키 설정
+cp .env.example .env             # 만든 .env 파일에 진짜 키를 넣어 주세요
+```
+
+| 키               | 발급받는 곳                                             |
+| ---------------- | ------------------------------------------------------- |
+| `OPENAI_API_KEY` | [OpenAI Platform](https://platform.openai.com/api-keys) |
+| `GIPHY_API_KEY`  | [GIPHY Developers](https://developers.giphy.com/)       |
+
+> `.env`는 `.gitignore`에 들어 있어서 커밋되지 않아요.
+
+<!-- TODO: Step 1 이후 실행 명령 추가 -->
 
 ## 진행 상황
 
-- [ ] Step 0. 환경 준비
+- [x] Step 0. 환경 준비
 - [ ] Step 1. 키워드 감정 분류기 (LLM 없이)
 - [ ] Step 2. LLM 감정 분류기
 - [ ] Step 3. 감정 + 캡션 + GIF 합치기

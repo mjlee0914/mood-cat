@@ -45,11 +45,11 @@ The LLM only classifies the mood and writes the caption. Images come from an API
 
 ### A Cat Shows Up Even When Things Fail
 
-| Step | On failure |
-|---|---|
-| LLM mood classification | retry 3 times → keyword classifier |
-| LLM caption | retry 3 times → "...meow? (the server is napping)" |
-| GIPHY | retry 3 times → CATAAS image |
+| Step                    | On failure                                         |
+| ----------------------- | -------------------------------------------------- |
+| LLM mood classification | retry 3 times → keyword classifier                 |
+| LLM caption             | retry 3 times → "...meow? (the server is napping)" |
+| GIPHY                   | retry 3 times → CATAAS image                       |
 
 ## Tech Stack
 
@@ -59,11 +59,36 @@ The LLM only classifies the mood and writes the caption. Images come from an API
 
 ## Getting Started
 
-<!-- TODO: fill in during Step 0 (virtual env, install, .env setup) -->
+**Requirements:** Python 3.11+ (developed on 3.13), an OpenAI API key, a GIPHY API key
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/mjlee0914/mood-cat.git
+cd mood-cat
+
+# 2. Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Set up API keys
+cp .env.example .env             # then put your real keys in .env
+```
+
+| Key              | Where to get it                                         |
+| ---------------- | ------------------------------------------------------- |
+| `OPENAI_API_KEY` | [OpenAI Platform](https://platform.openai.com/api-keys) |
+| `GIPHY_API_KEY`  | [GIPHY Developers](https://developers.giphy.com/)       |
+
+> `.env` is listed in `.gitignore`, so it never gets committed.
+
+<!-- TODO: add the run command after Step 1 -->
 
 ## Progress
 
-- [ ] Step 0. Environment setup
+- [x] Step 0. Environment setup
 - [ ] Step 1. Keyword mood classifier (no LLM)
 - [ ] Step 2. LLM mood classifier
 - [ ] Step 3. Combine mood + caption + GIF
