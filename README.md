@@ -89,7 +89,7 @@ cp .env.example .env             # then put your real keys in .env
 ## Progress
 
 - [x] Step 0. Environment setup
-- [ ] Step 1. Keyword mood classifier (no LLM)
+- [x] Step 1. Keyword mood classifier (no LLM)
 - [ ] Step 2. LLM mood classifier
 - [ ] Step 3. Combine mood + caption + GIF
 - [ ] Step 4. Retry / fallback
