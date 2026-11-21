@@ -90,7 +90,7 @@ cp .env.example .env             # 만든 .env 파일에 진짜 키를 넣어 �
 
 - [x] Step 0. 환경 준비
 - [x] Step 1. 키워드 감정 분류기 (LLM 없이)
-- [ ] Step 2. LLM 감정 분류기
+- [x] Step 2. LLM 감정 분류기
 - [ ] Step 3. 감정 + 캡션 + GIF 합치기
 - [ ] Step 4. retry / fallback
 - [ ] Step 5. (선택) 캡션 스트리밍

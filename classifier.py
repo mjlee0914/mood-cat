@@ -1,5 +1,9 @@
 """ 
-감정/상태 키워드 분류기
+감정/상태 키워드 분류기 <single source of truth>
+- label 추가할 때마다 이곳만 고치면 됨
+- 라벨 목록은 프롬프트에 매번 넣지 않고 CATIFY_DICT에서 가져다 쓰기
+- LLM 없이도 동작한다 - fallback은 LLM이 고장나도 살아 있어야 한다!
+
 
 -> 한계 존재:
 - 키워드를 아무리 늘려도 사람이 말하는 방식을 다 잡을 수 없음 (조사나 부정 등 모두 잡을 수 없음)
@@ -39,6 +43,7 @@ def sentence_to_label(sentence):
                 return label
     return "neutral"
 
+# 다른 파일에서 import해도 밑의 두개 print()는 실행되지 않는다
 if __name__ == "__main__":
     print(sentence_to_label("아 배고파"))       # hungry 나오면 성공
     print(sentence_to_label("오늘 날씨 좋다"))   # neutral 나오면 성공
