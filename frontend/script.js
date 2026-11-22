@@ -9,9 +9,11 @@
 
 // ===== BE 주소 =====
 // 내 컴퓨터에서 열었으면 로컬 서버, 아니면(GitHub Pages) 배포된 서버로 요청
+// Render 주소 = render.yaml의 서비스 이름(mood-cat-api).
+// ⚠️ Render가 이름 뒤에 글자를 붙여 만들었다면(예: mood-cat-api-x1y2) 여기도 똑같이 바꾸기
 const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
   ? "http://127.0.0.1:8000"
-  : "https://mood-cat-api.onrender.com"; // TODO: Render 배포 후 실제 주소로 바꾸기
+  : "https://mood-cat-api.onrender.com";
 
 const MOOD_EMOJI = {
   go_home: "🏠", poop: "💩", hungry: "🍙", sleepy: "😴",

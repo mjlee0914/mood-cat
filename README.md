@@ -8,7 +8,9 @@ Nothing special — the whole point is to learn and build something fun.
 
 ## Demo
 
-<!-- TODO: GIF or screenshot of a run -->
+**👉 [Open the site](https://mjlee0914.github.io/mood-cat/)**
+
+> The server (BE) runs on Render's free plan, so it falls asleep when nobody uses it 😴 The first search may take a moment to wake it up.
 
 ```
 Input:   "I totally bombed my exam :("
@@ -55,9 +57,20 @@ I broke the OpenAI and GIPHY keys on purpose and checked that all four cases (no
 
 ## Tech Stack
 
-- Python, LangChain (`langchain-core`, `langchain-openai`)
-- OpenAI API
-- GIPHY API
+| Part | Tech |
+|---|---|
+| AI chain | Python, LangChain (`langchain-core`, `langchain-openai`), OpenAI API |
+| GIF search | GIPHY API |
+| Server (BE) | FastAPI, Uvicorn |
+| Web page (FE) | HTML / CSS / JavaScript (no framework), GSAP |
+| Sound | Web Audio API (BGM, "meow", and "boom" synthesized in code, no audio files) |
+| Deploy | Render (BE), GitHub Pages (FE) |
+
+### What the web page (FE) does
+- A deliberately janky design inspired by 2007 homepages and Korean PowerPoint school slides
+- English / Korean switch (auto-selected from the browser language)
+- Intentionally annoying UI: a button that runs away, cookie dialogs, a nagging timer, a fake button
+- A rainbow trail that follows the mouse, 💥 on click, and a typewriter effect for captions
 
 ## Getting Started
 
@@ -86,7 +99,23 @@ cp .env.example .env             # then put your real keys in .env
 
 > `.env` is listed in `.gitignore`, so it never gets committed.
 
-### Run
+### Run as a web app
+
+You need **two terminals**: one for the server (BE) and one for the web page (FE).
+
+```bash
+# Terminal 1: server (BE)
+uvicorn api:app --reload
+# → try the API at http://127.0.0.1:8000/docs
+
+# Terminal 2: web page (FE)
+python -m http.server 5500 --directory frontend
+# → open http://localhost:5500 in your browser
+```
+
+> Opened from `localhost`, the page talks to the local server (port 8000). Opened from GitHub Pages, it talks to the Render server.
+
+### Run in the terminal only
 
 ```bash
 python main.py
@@ -106,6 +135,16 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 > To try another sentence, change the text at the bottom of `main.py` (e.g. `{"text": "I'm so hungry"}`).
 > Captions follow the input language: Korean input gets a "-냥" ending, English input gets a "meow".
 
+## Deploy
+
+| Part | Where | How |
+|---|---|---|
+| Server (BE) | [Render](https://render.com) free plan | Configured automatically from `render.yaml` in the repo (Blueprint) |
+| Web page (FE) | GitHub Pages | Every push to `main` runs `.github/workflows/pages.yml`, which deploys only the `frontend/` folder |
+
+- API keys are never committed. They only live in Render's environment variables.
+- The server only accepts requests from `https://mjlee0914.github.io` (CORS).
+
 ## Progress
 
 - [x] Step 0. Environment setup
@@ -113,6 +152,8 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 - [x] Step 2. LLM mood classifier
 - [x] Step 3. Combine mood + caption + GIF
 - [x] Step 4. Retry / fallback
+- [x] Web page (FE) + API server (BE)
+- [ ] Deploy (Render + GitHub Pages)
 - [ ] Step 5. (Optional) Caption streaming
 - [ ] Step 6. (Optional) Blog demo
 - [ ] Step 7. Retrospective
@@ -130,3 +171,5 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 ## Credits
 
 - GIFs: [GIPHY](https://giphy.com/) (Powered by GIPHY)
+- The cat memes on the page (hello cat, kung fu cat, laptop cat, etc.) belong to their original creators.
+- The BGM and sound effects are synthesized with Web Audio.
