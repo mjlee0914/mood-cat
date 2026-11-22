@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>~*~ MOOD CAT ~*~</title>
+  <!-- 밤티 감성: 웹폰트 없이 Comic Sans / 굴림체 같은 "컴퓨터 기본 글꼴"만.
+       Anton은 Impact가 없는 폰을 위한 대타예요. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    번역: data-i18n="키" 가 붙은 요소는 script.js의 번역 사전(I18N)에서 글자를 가져와요.
+    HTML에 적힌 영어는 "JS가 실행되기 전" 잠깐 보이는 기본값이에요.
+  -->
+
+  <!-- 🔥 마우스를 따라오는 불 꼬리를 그리는 도화지 -->
+  <canvas id="trail" class="trail" aria-hidden="true"></canvas>
+
+  <!-- 결과가 나올 때 화면이 "번쩍" -->
+  <div id="flash" class="flash" aria-hidden="true"></div>
+
+  <!-- 맨 위 오른쪽: 언어 선택 + 소리 켜기/끄기 -->
+  <div class="toolbar">
+    <label class="lang-box">🌐 Language
+      <select id="lang-select">
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+      </select>
+    </label>
+    <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true">SOUND ON</button>
+  </div>
+
+
+  <!-- =================================================================
+       화면 ①②: 랜딩 = 입구
+       처음부터: 헬로캣 짤 + CLICK HERE TO ENTER + 노트북 고양이 말풍선
+       ENTER를 누르면: 그 자리에 나가기 버튼 + 구라치는 버튼
+       ================================================================= -->
+  <section id="landing" class="screen landing">
+    <h1 class="ppt-title"><span class="rainbow-text" data-i18n="title">Cat Meme Generator</span></h1>
+
+    <div class="landing-stage">
+      <!-- 헬로캣 짤 -->
+      <figure class="meme-frame">
+        <img src="img/hello-cat.gif" width="360" height="272" alt="A cat waving hello">
+      </figure>
+
+      <div class="landing-side">
+        <!-- 입구 버튼: 누르면 사라지고, 같은 자리에 아래 두 버튼이 나타나요 -->
+        <div id="enter-area" class="enter-area">
+          <button id="enter-btn" class="burst burst-enter" type="button">
+            <span data-i18n="enter">CLICK HERE
+TO ENTER</span>
+          </button>
+          <p class="enter-hint" data-i18n="soundHint">🔊 turn your sound on</p>
+        </div>
+
+        <!-- 열받는 UI ①: 나가기 버튼이 더 크고 화려함 + 누르려 하면 도망감 / 진짜 버튼은 작은 회색 -->
+        <div class="choices" id="choices" hidden>
+          <button id="exit-btn" class="ugly-btn ugly-yes dodgy" type="button" data-i18n="exitBtn">NAH I'M OUT</button>
+          <button id="dig-in-btn" class="ugly-btn ugly-no" type="button" data-i18n="digInBtn">yeah let's dig in</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 노트북 치는 고양이: 오른쪽 아래에서 말풍선으로 대사 (처음부터 보임) + 바로 밑에 제작자 링크 -->
+    <div id="whiskers" class="whiskers">
+      <p class="speech" aria-live="polite"><span id="landing-line"></span></p>
+      <img id="whiskers-img" class="whiskers-img" src="img/whiskers.png" alt="A cat typing on a laptop">
+      <p class="maker">
+        <span data-i18n="madeBy">★ made by:</span>
+        <a href="https://github.com/mjlee0914" target="_blank" rel="noopener noreferrer">mjlee0914 (GitHub)</a> ★
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =================================================================
+       화면 ④: 나가려고 하면... (쿵푸캣)
+       ================================================================= -->
+  <section id="exit" class="screen exit" hidden>
+    <h2 class="exit-title" data-i18n="exitTitle">WHERE DO YOU THINK
+YOU'RE GOING?</h2>
+
+    <!-- 쿵푸캣 짤 -->
+    <figure class="meme-frame">
+      <img src="img/kungfu-cat.gif" width="480" height="476" alt="A cat in a kung fu stance">
+    </figure>
+
+    <button id="stay-btn" class="ugly-btn ugly-yes" type="button" data-i18n="stayBtn">ok ok i'll stay 😿</button>
+  </section>
+
+
+  <!-- =================================================================
+       화면 ③: 무드 검색 (원래 앱)
+       ================================================================= -->
+  <div id="page" class="screen page" hidden>
+    <div class="cloud cloud-corner" aria-hidden="true" data-i18n="cloud">thx 4 ur
+attention</div>
+
+    <!-- 열받는 UI ④: 재촉하는 타이머 팝업 -->
+    <div id="nag" class="nag" role="status" hidden></div>
+
+    <header class="masthead">
+      <h1 class="logo">MOOD CAT</h1>
+    </header>
+
+    <main class="app">
+      <!-- 입력 -->
+      <form id="mood-form" class="mood-form">
+        <label for="mood-input" class="sr-only" data-i18n="inputLabel">How do you feel?</label>
+        <input id="mood-input" type="text" maxlength="200" autocomplete="off" required>
+        <button type="submit" id="submit-btn">MEOW!</button>
+        <!-- 열받는 UI ③: 진짜와 똑같이 생긴 가짜 버튼 -->
+        <button type="button" id="fake-submit" class="fake-submit">SUBMIT</button>
+      </form>
+
+      <!-- 추천 검색어: 글자와 data-text는 script.js가 언어에 맞게 채워요 -->
+      <div class="examples">
+        <button type="button" class="ex-red"></button>
+        <button type="button" class="ex-blue"></button>
+        <button type="button" class="ex-red"></button>
+        <button type="button" class="ex-blue"></button>
+      </div>
+
+      <!-- 상태 메시지 (로딩, 에러) -->
+      <p id="status" class="status" role="status"></p>
+
+      <!-- 결과 (처음엔 숨김) -->
+      <section id="result" class="result" hidden>
+        <div class="result-stage">
+          <!-- cat-wrap: 감정마다 다른 움직임 / cat-gif: 등장 애니메이션 -->
+          <div id="cat-wrap" class="cat-wrap">
+            <img id="cat-gif" class="cat-gif" alt="">
+          </div>
+          <!-- 폭발 별: "와 너무 SAD하다!!" / "SO SAD!!" -->
+          <p id="mood-badge" class="burst burst-mood"></p>
+        </div>
+        <p id="caption" class="caption"></p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span data-i18n="counterBefore">You have been catified for</span>
+        <span id="timer" class="counter">000000</span>
+        <span data-i18n="counterAfter">seconds</span>
+      </p>
+      <p class="copyright" data-i18n="copyright">&copy; 2007 Mood Cat. GIFs Powered by GIPHY. Cat memes belong to their original creators.</p>
+      <p class="take-it" data-i18n="takeIt">plz share w/ ur friends!!</p>
+    </footer>
+  </div>
+
+  <!-- GSAP: 등장 애니메이션 (없어도 앱은 동작해요) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

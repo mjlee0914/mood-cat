@@ -1,0 +1,694 @@
+/* =====================================================================
+   ~*~ MOOD CAT ~*~  밤티 감성 (한국 PPT 과제 + 2007년 홈페이지 + GTA 대사 + 열받는 UI)
+   - 초록빛 흰 배경, 폭발 별 "와 너무 ~하다!!", 구름 말풍선 "많은 관심 감사해용"
+   - Comic Sans + 굴림체, 빨강/파랑 아무 데나 강조, 미니홈피 캡션, "냥붕이들은 퍼가!!"
+   ===================================================================== */
+:root {
+  /* 글꼴: 영어는 Comic Sans, 한국어는 굴림체.
+     Comic Sans에는 한글이 없어서, 브라우저가 한글만 다음 글꼴(굴림체)에서 찾아 써요.
+     굴림체는 윈도우 글꼴이라 맥에서는 AppleGothic(맥의 옛날 기본 한글 글꼴)으로 보여요. */
+  --font: "Comic Sans MS", "Comic Sans", "Chalkboard SE", GulimChe, "굴림체", Gulim, "굴림", AppleGothic, sans-serif;
+  --impact: Impact, "Anton", "Arial Black", sans-serif;
+  --arial: Arial, Helvetica, sans-serif;
+
+  /* 배경: 모든 화면 흰색 하나로 통일 */
+  --bg: #ffffff;
+
+  /* 고양이 발바닥 마우스 포인터 */
+  --paw: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><g fill='%23ff6600' stroke='black' stroke-width='1.5'><ellipse cx='16' cy='21.5' rx='7.5' ry='6.5'/><circle cx='6.5' cy='13' r='3.3'/><circle cx='12' cy='7.5' r='3.3'/><circle cx='20' cy='7.5' r='3.3'/><circle cx='25.5' cy='13' r='3.3'/></g></svg>");
+  --paw-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><g fill='%23ffff00' stroke='black' stroke-width='1.5'><ellipse cx='16' cy='21.5' rx='7.5' ry='6.5'/><circle cx='6.5' cy='13' r='3.3'/><circle cx='12' cy='7.5' r='3.3'/><circle cx='20' cy='7.5' r='3.3'/><circle cx='25.5' cy='13' r='3.3'/></g></svg>");
+
+  /* 폭발 별 모양 (꼭짓점 24개짜리 들쭉날쭉 별) */
+  --burst-shape: polygon(50% 0, 57% 14%, 70% 4%, 72% 21%, 90% 14%, 85% 32%, 100% 35%, 89% 48%, 100% 62%, 84% 66%, 93% 84%, 74% 80%, 72% 100%, 59% 87%, 48% 100%, 41% 85%, 26% 96%, 25% 78%, 6% 84%, 14% 65%, 0 56%, 13% 45%, 2% 28%, 20% 28%, 18% 9%, 36% 16%);
+
+  /* ① 마우스 위치 (-1 ~ 1). script.js가 계속 바꿔요 */
+  --mx: 0;
+  --my: 0;
+}
+
+* { box-sizing: border-box; }
+
+/* hidden 속성이 display: flex 같은 다른 스타일에 지지 않게 */
+[hidden] { display: none !important; }
+
+/* 번역 글자 속 줄바꿈(\n)을 그대로 보여주기 */
+[data-i18n] { white-space: pre-line; }
+
+html { cursor: var(--paw) 16 16, auto; }
+button { cursor: var(--paw-hover) 16 16, pointer; }
+input { cursor: text; }
+
+body {
+  margin: 0;
+  font: 20px var(--font);
+  color: #000;
+  background: #fff;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ===== 층 순서 ===== */
+.screen       { position: relative; z-index: 1; }
+.trail        { z-index: 2; }
+.flash        { z-index: 3; }
+.pop          { z-index: 4; }
+.toolbar      { z-index: 5; }
+
+.screen { min-height: 100vh; }
+
+
+/* =====================================================================
+   공통 부품
+   ===================================================================== */
+
+/* 폭발 별: 바깥 상자에 filter로 "빨간 테두리"를 그리고, 안쪽 span을 별 모양으로 오려요.
+   (filter가 먼저, 오리기(clip-path)가 나중이라 한 요소에 같이 쓰면 테두리까지 잘려 나가요) */
+.burst {
+  display: inline-grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  filter:
+    drop-shadow(2px 0 0 #e00000) drop-shadow(-2px 0 0 #e00000)
+    drop-shadow(0 2px 0 #e00000) drop-shadow(0 -2px 0 #e00000);
+}
+
+.burst > span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 18%;
+  text-align: center;
+  font: bold 27px/1.25 var(--font);
+  color: #000;
+  background: #ffff00;
+  clip-path: var(--burst-shape);
+  white-space: pre-line;   /* 글자 속 줄바꿈(\n)을 그대로 보여주기 */
+}
+
+/* 구름 말풍선 "많은 관심 감사해용" */
+.cloud {
+  position: relative;
+  display: inline-block;
+  padding: 14px 22px;
+  font: 18px/1.4 var(--font);
+  text-align: center;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+}
+
+/* 생각 방울 두 개 */
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+}
+
+.cloud::before { width: 18px; height: 14px; left: 18%; bottom: -16px; }
+.cloud::after  { width: 10px; height: 8px;  left: 10%; bottom: -28px; }
+
+/* 촌스러운 버튼 */
+.ugly-btn {
+  font: bold 26px var(--font);
+  border: 3px solid #000;
+}
+
+.ugly-yes {
+  padding: 12px 22px;
+  color: #ff0000;
+  background: #ffff00;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.ugly-yes:active { transform: translate(4px, 4px); box-shadow: none; }
+
+.ugly-no {
+  padding: 4px 10px;
+  font-size: 16px;
+  color: #555;
+  background: #ddd;
+  border-width: 1px;
+}
+
+
+/* 짤 액자 (PPT에 그냥 "그림 삽입"한 느낌: 검은 테두리만) */
+.meme-frame {
+  margin: 0;
+  border: 3px solid #000;
+}
+
+.meme-frame img {
+  display: block;
+  width: min(420px, 100vw - 40px);
+  height: auto;   /* width/height 속성은 비율 계산용, 실제 크기는 CSS가 정해요 */
+}
+
+/* 타자기 커서 */
+.typing::after {
+  content: "▌";
+  margin-left: 2px;
+  animation: blink .6s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+
+/* =====================================================================
+   입구 버튼 (랜딩 화면 안, 영상 옆)
+   ===================================================================== */
+.enter-area {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.burst-enter {
+  width: min(280px, 72vw);
+  aspect-ratio: 1;
+  animation: wobble 1.2s ease-in-out infinite;
+}
+
+.burst-enter > span { font-size: clamp(25px, 7.5vw, 38px); color: #e00000; }
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-6deg) scale(1); }
+  50%      { transform: rotate(6deg) scale(1.08); }
+}
+
+.enter-hint {
+  margin: 0;
+  font: bold 23px var(--font);
+  color: #000;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+
+/* =====================================================================
+   화면 ②: 랜딩
+   ===================================================================== */
+.landing {
+  padding: 20px 16px 120px;
+  background: var(--bg);
+}
+
+/* 제목 "고양이 짤 생성기" (가운데, 무지개 글자) */
+.ppt-title {
+  margin: 0 0 18px;
+  font: bold clamp(30px, 5.5vw, 44px) var(--font);
+  text-align: center;
+}
+
+.rainbow-text {
+  background: linear-gradient(90deg, #ff0000, #ff8000, #e0c000, #00a000, #0080ff, #8000ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.landing-stage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 28px 40px;
+}
+
+.landing-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding-top: 20px;
+}
+
+/* 노트북 고양이: 오른쪽 아래 고정 + 위에 말풍선 */
+.whiskers {
+  position: fixed;
+  right: 10px;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;   /* 고양이가 뒤의 버튼 클릭을 막지 않게 */
+}
+
+/* 노트북 치는 고양이 (이미 배경이 투명한 PNG, 가로로 긴 그림) */
+.whiskers-img {
+  display: block;
+  width: clamp(170px, 26vw, 320px);
+}
+
+/* 만화 말풍선: 흰 바탕 + 검은 테두리 + 고양이 쪽(오른쪽 아래)으로 꼬리 */
+.speech {
+  position: relative;
+  max-width: min(360px, 68vw);
+  margin: 0 70px 14px 0;
+  padding: 10px 14px;
+  font: bold 22px/1.45 var(--font);
+  color: #000;
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 18px;
+  pointer-events: auto;
+}
+
+/* 대사가 아직 없으면 말풍선 숨기기 */
+.speech:has(#landing-line:empty) { visibility: hidden; }
+
+/* 꼬리: 검은 삼각형 위에 흰 삼각형을 살짝 겹쳐서 테두리가 있는 꼬리처럼 */
+.speech::before,
+.speech::after {
+  content: "";
+  position: absolute;
+  right: 26px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.speech::before { bottom: -20px; border-width: 20px 0 0 20px; border-top-color: #000; }
+.speech::after  { bottom: -14px; right: 29px; border-width: 15px 0 0 15px; border-top-color: #fff; }
+
+/* 제작자 링크: 노트북 고양이 바로 밑, 그 시절 기본 파란 밑줄 링크 */
+.maker {
+  margin: 0 6px 8px 0;
+  font: bold 18px var(--font);
+  text-align: right;
+  background: #fff;
+  pointer-events: auto;   /* 부모(.whiskers)는 클릭을 통과시키지만 링크는 눌려야 하니까 */
+}
+
+.maker a { color: #0000ee; text-decoration: underline; }
+.maker a:visited { color: #551a8b; }   /* 한 번 들어갔던 링크는 보라색 (2007년 국룰) */
+.maker a:hover { color: #ff0000; background: #ffff00; }
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+
+/* =====================================================================
+   화면 ④: 나가려고 하면...
+   ===================================================================== */
+.exit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 64px 16px 120px;   /* 맨 위 언어/소리 버튼과 안 겹치게 */
+  background: var(--bg);
+  text-align: center;
+}
+
+.exit-title {
+  margin: 0;
+  font: 400 clamp(42px, 10vw, 80px)/1.05 var(--impact);
+  color: #ff0000;
+  text-shadow:
+    -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff,
+    7px 7px 0 #000;
+  animation: wobble .6s ease-in-out infinite;
+}
+
+
+/* =====================================================================
+   화면 ③: 무드 검색
+   ===================================================================== */
+.page {
+  padding: 16px 16px 40px;
+  text-align: center;
+  background: var(--bg);
+}
+
+.cloud-corner {
+  position: absolute;
+  top: 14px;
+  right: 120px;
+  rotate: 6deg;
+}
+
+.masthead { padding: 40px 0 10px; }
+
+/* 로고: 꾸밈 없이 가로 한 줄, 검정, Comic Sans */
+.logo {
+  margin: 0;
+  font: bold clamp(52px, 14vw, 94px)/1.1 var(--font);
+  color: #000;
+  white-space: nowrap;
+}
+
+.app {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 20px 18px 24px;
+  background: #fff;
+  border: 3px solid #000;
+}
+
+/* ===== 입력 ===== */
+.mood-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-top: 14px;        /* 고양이 귀 자리 */
+}
+
+.mood-form input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 10px;
+  font: 20px var(--font);  /* 16px 미만이면 아이폰에서 자동 확대돼요 */
+  color: #000;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0;
+  outline: none;
+}
+
+.mood-form input:focus { background: #ffffcc; }
+
+/* 고양이 머리 버튼: 노랑 + 검은 테두리 + 빨간 글씨 */
+.mood-form button {
+  position: relative;
+  isolation: isolate;
+  height: 48px;
+  padding: 4px 22px 0;
+  font: bold 23px var(--font);
+  color: #ff0000;
+  background: #ffff00;
+  border: 2px solid #000;
+  border-radius: 48% 48% 44% 44% / 58% 58% 42% 42%;
+}
+
+.mood-form button::before,
+.mood-form button::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -16px;
+  width: 26px;
+  height: 26px;
+  background: #000;   /* 귀는 검은 테두리 색 그대로 (대충 만든 느낌) */
+}
+
+.mood-form button::before { left: 10%;  clip-path: polygon(0 100%, 18% 0, 100% 100%); }
+.mood-form button::after  { right: 10%; clip-path: polygon(0 100%, 82% 0, 100% 100%); }
+
+.mood-form button:hover    { background: #00ffff; }
+.mood-form button:active   { transform: translateY(2px); }
+.mood-form button:disabled { color: #777; cursor: wait; }
+
+/* ===== 예시 문장: 빨강/파랑 아무렇게나 강조 ===== */
+.examples {
+  margin-top: 16px;
+  line-height: 2;
+}
+
+
+.examples button {
+  margin: 0 4px;
+  padding: 0 2px;
+  font: bold 21px var(--font);
+  text-decoration: underline;
+  background: none;
+  border: none;
+}
+
+.ex-red  { color: #ff0000; }
+.ex-blue { color: #0000ff; }
+.examples button:hover { background: #ffff00; }
+
+/* ===== 상태 메시지 ===== */
+.status {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  font-weight: bold;
+}
+
+.status.loading { animation: blink .8s steps(1) infinite; }
+
+/* ===== 결과 ===== */
+.result { margin-top: 8px; }
+
+.result-stage {
+  position: relative;
+  display: inline-block;
+  width: min(300px, 74%);
+}
+
+.cat-wrap { animation: bob 1.6s ease-in-out infinite; }
+
+/* PPT에 그냥 "그림 삽입"한 느낌: 테두리 없음, 살짝 비뚤게 */
+.cat-gif {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #ccc;
+  rotate: -2deg;
+}
+
+@keyframes bob { 50% { transform: translateY(-6px); } }
+
+/* ===== 감정마다 다른 움직임 ===== */
+.cat-wrap.mood-happy       { animation: hop .6s ease-in-out infinite; }
+.cat-wrap.mood-sad         { animation: droop 2.6s ease-in-out infinite; }
+.cat-wrap.mood-hurt        { animation: droop 2.6s ease-in-out infinite; }
+.cat-wrap.mood-angry       { animation: shake .3s ease-in-out infinite; }
+.cat-wrap.mood-anxious     { animation: jitter .18s ease-in-out infinite; }
+.cat-wrap.mood-sleepy      { animation: breathe 3.2s ease-in-out infinite; }
+.cat-wrap.mood-hungry      { animation: wiggle .8s ease-in-out infinite; }
+.cat-wrap.mood-go_home     { animation: run .6s ease-in-out infinite; }
+.cat-wrap.mood-embarrassed { animation: hide 2s ease-in-out infinite; }
+
+@keyframes hop     { 50% { transform: translateY(-16px); } }
+@keyframes droop   { 50% { transform: translateY(6px) rotate(-3deg); } }
+@keyframes shake   { 25% { transform: translateX(-5px) rotate(-2deg); } 75% { transform: translateX(5px) rotate(2deg); } }
+@keyframes jitter  { 50% { transform: translate(2px, -2px); } }
+@keyframes breathe { 50% { transform: scale(.96) translateY(4px); } }
+@keyframes wiggle  { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+@keyframes run     { 50% { transform: translateX(-8px) translateY(-4px); } }
+@keyframes hide    { 50% { transform: scale(.92) rotate(4deg); opacity: .8; } }
+
+/* "와 너무 SAD하다!!" 폭발 별: 고양이 오른쪽 위에 걸치게 */
+.burst-mood {
+  position: absolute;
+  top: -34px;
+  right: -110px;
+  width: 205px;
+  aspect-ratio: 1;
+  rotate: 10deg;
+}
+
+.burst-mood > span { font-size: 21px; }
+
+/* 고양이 캡션: 꾸밈 없이 검정 글씨만 */
+.caption {
+  max-width: 480px;
+  margin: 24px auto 0;
+  font: 24px/1.6 var(--font);
+  color: #000;
+}
+
+/* ===== 아래쪽 ===== */
+.footer {
+  position: relative;
+  width: min(720px, 100%);
+  margin: 16px auto 0;
+  padding: 10px;
+  font: 17px var(--font);
+  text-align: center;
+  background: #fff;
+  border: 3px solid #000;
+}
+
+.footer p { margin: 0; }
+
+.counter {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 1px 3px;
+  font: bold 19px "Courier New", monospace;
+  letter-spacing: 3px;
+  color: #00ff00;
+  background: #000;
+}
+
+.copyright { margin-top: 6px !important; font-size: 14px; color: #555; }
+
+.take-it {
+  position: absolute;
+  right: 8px;
+  bottom: -26px;
+  font: bold 18px var(--font);
+  color: #ff0000;
+  rotate: -4deg;
+}
+
+
+/* =====================================================================
+   열받는 UI 부품들
+   ===================================================================== */
+
+/* ① 도망가는 버튼: script.js가 --dx, --dy를 바꾸면 휙 이동 */
+.dodgy {
+  translate: var(--dx, 0px) var(--dy, 0px);
+  transition: translate .18s ease-out;
+}
+
+/* ② 쿠키 알림: CSS 없음! 브라우저 진짜 알림창(confirm, alert)을 써요 (script.js) */
+
+/* ③ 가짜 SUBMIT 버튼: 진짜 MEOW 버튼과 "똑같은 고양이 머리"라서 뭐가 진짜인지 헷갈리게
+      (.mood-form button 스타일을 그대로 물려받아요) */
+
+/* ④ 재촉 타이머 팝업 */
+.nag {
+  position: fixed;
+  top: 44px;
+  right: 10px;
+  z-index: 7;
+  padding: 10px 14px;
+  font: bold 20px var(--font);
+  color: #fff;
+  background: #ff0000;
+  border: 3px solid #ffff00;
+  animation: nag-shake .4s ease-in-out infinite;
+}
+
+@keyframes nag-shake {
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+
+/* =====================================================================
+   효과들
+   ===================================================================== */
+.trail {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: #fff;
+}
+
+.pop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  font-size: 38px;
+  pointer-events: none;
+  user-select: none;
+  translate: calc(var(--x) - 50%) calc(var(--y) - 50%);
+  animation: pop-up .8s ease-out forwards;
+}
+
+@keyframes pop-up {
+  0%   { transform: scale(0); }
+  30%  { transform: scale(1.4) rotate(var(--r)); }
+  100% { transform: translate(var(--dx), -60px) scale(.8) rotate(var(--r)); opacity: 0; }
+}
+
+/* 맨 위 오른쪽 도구 막대: 언어 선택 + 소리 버튼 */
+.toolbar {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 언어 선택: 윈도우 98 회색 상자 */
+.lang-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font: 15px Tahoma, Verdana, sans-serif;
+  color: #000;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+}
+
+.lang-box select {
+  font: 15px Tahoma, Verdana, sans-serif;
+  border: 2px inset #fff;
+  border-radius: 0;
+}
+
+/* 소리 버튼: 윈도우 98 회색 버튼 */
+.sound-toggle {
+  padding: 3px 8px;
+  font: 15px Tahoma, Verdana, sans-serif;
+  color: #000;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  border-radius: 0;
+}
+
+.sound-toggle:active { border-style: inset; }
+.sound-toggle[aria-pressed="false"] { color: #666; }
+
+/* ===== 폰 화면 ===== */
+@media (max-width: 600px) {
+  /* 맨 위 언어/소리 버튼과 안 겹치게 내용을 조금 아래로 */
+  .landing, .exit { padding-top: 56px; }
+  .cloud-corner { right: auto; left: 8px; top: 48px; font-size: 14px; padding: 8px 12px; }
+  .masthead { padding-top: 96px; }
+  .lang-box, .lang-box select, .sound-toggle { font-size: 13px; }
+  .app { padding: 16px 12px 20px; }
+  /* 폭발 별은 고양이 오른쪽 아래로, 작게 */
+  .burst-mood { top: auto; bottom: -40px; right: -40px; width: 155px; }
+  .burst-mood > span { font-size: 17px; }
+  .caption { margin-top: 50px; font-size: 21px; }
+  /* 폰 랜딩: 버튼을 영상 "위"로 올리고, 영상은 짧게 → 자막에 안 가리게 */
+  .landing-side { order: -1; padding-top: 0; gap: 0; }
+  .burst-enter { width: 190px; }
+  .burst-enter > span { font-size: 22px; }
+  .enter-hint { font-size: 19px; }
+  .choices { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .landing, .exit { padding-bottom: 140px; }
+  .landing { padding-bottom: 260px; }   /* 오른쪽 아래 고양이 + 말풍선 자리 */
+  .speech { margin-right: 40px; font-size: 19px; }
+  /* 입력 + 고양이 버튼 + 가짜 버튼이 한 줄에 안 들어가서 줄바꿈 허용 */
+  .mood-form { flex-wrap: wrap; justify-content: center; }
+  .mood-form input { flex-basis: 100%; }
+  .nag { top: auto; bottom: 10px; right: 50%; translate: 50% 0; }
+}
+
+/* 움직임을 줄이고 싶은 사용자 설정을 존중하기 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .trail, .pop, .flash { display: none; }
+}
