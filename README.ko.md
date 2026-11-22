@@ -84,14 +84,32 @@ cp .env.example .env             # 만든 .env 파일에 진짜 키를 넣어 �
 
 > `.env`는 `.gitignore`에 들어 있어서 커밋되지 않아요.
 
-<!-- TODO: Step 1 이후 실행 명령 추가 -->
+### 실행하기
+
+```bash
+python main.py
+```
+
+실행하면 이런 딕셔너리가 출력돼요. 캡션과 GIF는 실행할 때마다 달라질 수 있어요.
+
+```python
+{
+    "text": "시험 망했어 ㅠㅠ",
+    "mood": "sad",
+    "caption": "시험 망해서 세상이 무너진 줄 알았다냥… ㅠㅠ",
+    "image_url": "https://media3.giphy.com/media/.../giphy.gif",
+}
+```
+
+> 다른 문장을 넣어 보려면 `main.py` 맨 아래의 `"시험 망했어 ㅠㅠ"`를 바꿔 주세요.
+> 캡션은 입력 언어를 따라가요. 한국어로 입력하면 "-냥", 영어로 입력하면 "meow"로 끝나요.
 
 ## 진행 상황
 
 - [x] Step 0. 환경 준비
 - [x] Step 1. 키워드 감정 분류기 (LLM 없이)
 - [x] Step 2. LLM 감정 분류기
-- [ ] Step 3. 감정 + 캡션 + GIF 합치기
+- [x] Step 3. 감정 + 캡션 + GIF 합치기
 - [ ] Step 4. retry / fallback
 - [ ] Step 5. (선택) 캡션 스트리밍
 - [ ] Step 6. (선택) 블로그 데모

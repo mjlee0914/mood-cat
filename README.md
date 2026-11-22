@@ -84,14 +84,32 @@ cp .env.example .env             # then put your real keys in .env
 
 > `.env` is listed in `.gitignore`, so it never gets committed.
 
-<!-- TODO: add the run command after Step 1 -->
+### Run
+
+```bash
+python main.py
+```
+
+It prints a dictionary like this. The caption and GIF may change on every run.
+
+```python
+{
+    "text": "I'm so hungry",
+    "mood": "hungry",
+    "caption": "I'm so hungry, feed me now, meow!",
+    "image_url": "https://media0.giphy.com/media/.../giphy.gif",
+}
+```
+
+> To try another sentence, change the text at the bottom of `main.py` (e.g. `{"text": "I'm so hungry"}`).
+> Captions follow the input language: Korean input gets a "-냥" ending, English input gets a "meow".
 
 ## Progress
 
 - [x] Step 0. Environment setup
 - [x] Step 1. Keyword mood classifier (no LLM)
 - [x] Step 2. LLM mood classifier
-- [ ] Step 3. Combine mood + caption + GIF
+- [x] Step 3. Combine mood + caption + GIF
 - [ ] Step 4. Retry / fallback
 - [ ] Step 5. (Optional) Caption streaming
 - [ ] Step 6. (Optional) Blog demo
