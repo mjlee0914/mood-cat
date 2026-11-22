@@ -45,17 +45,19 @@ LLM은 감정 분류와 캡션 작성에만 써요. 이미지는 생성하지 �
 
 ### 실패해도 고양이는 나온다
 
-| 단계          | 실패하면                               |
-| ------------- | -------------------------------------- |
-| LLM 감정 분류 | 3번 재시도 → 키워드 분류기             |
-| LLM 캡션      | 3번 재시도 → "...냥? (서버가 낮잠 중)" |
-| GIPHY         | 3번 재시도 → CATAAS 이미지             |
+| 단계          | 실패하면                                                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| LLM 감정 분류 | 최대 3번 시도 → 키워드 분류기 (Step 1)                                                                                               |
+| LLM 캡션      | 최대 3번 시도 → "서버가 낮잠중이다냥"                                                                                                |
+| GIPHY         | 최대 3번 시도 → [teabagging cat](https://giphy.com/gifs/cat-salam-salamualaikum-alaikum-WykUqckDqi95YIqtFZ) (검색 결과가 0개일 때도) |
+
+OpenAI 키와 GIPHY 키를 일부러 망가뜨려서, 네 가지 경우(정상 / OpenAI 고장 / GIPHY 고장 / 둘 다 고장) 모두 결과가 나오는 것을 확인했어요.
 
 ## 기술 스택
 
 - Python, LangChain (`langchain-core`, `langchain-openai`)
 - OpenAI API
-- GIPHY API, CATAAS
+- GIPHY API
 
 ## 실행 방법
 
@@ -110,7 +112,7 @@ python main.py
 - [x] Step 1. 키워드 감정 분류기 (LLM 없이)
 - [x] Step 2. LLM 감정 분류기
 - [x] Step 3. 감정 + 캡션 + GIF 합치기
-- [ ] Step 4. retry / fallback
+- [x] Step 4. retry / fallback
 - [ ] Step 5. (선택) 캡션 스트리밍
 - [ ] Step 6. (선택) 블로그 데모
 - [ ] Step 7. 회고
@@ -128,4 +130,3 @@ python main.py
 ## Credits
 
 - GIF: [GIPHY](https://giphy.com/) (Powered by GIPHY)
-- 고양이 사진: [CATAAS](https://cataas.com/)

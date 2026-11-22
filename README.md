@@ -45,17 +45,19 @@ The LLM only classifies the mood and writes the caption. Images come from an API
 
 ### A Cat Shows Up Even When Things Fail
 
-| Step                    | On failure                                         |
-| ----------------------- | -------------------------------------------------- |
-| LLM mood classification | retry 3 times → keyword classifier                 |
-| LLM caption             | retry 3 times → "...meow? (the server is napping)" |
-| GIPHY                   | retry 3 times → CATAAS image                       |
+| Step                    | On failure                                                                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LLM mood classification | up to 3 attempts → keyword classifier (Step 1)                                                                                                        |
+| LLM caption             | up to 3 attempts → "서버가 낮잠중이다냥" ("the server is napping, meow")                                                                              |
+| GIPHY                   | up to 3 attempts → [teabagging cat](https://giphy.com/gifs/cat-salam-salamualaikum-alaikum-WykUqckDqi95YIqtFZ) (also when the search returns nothing) |
+
+I broke the OpenAI and GIPHY keys on purpose and checked that all four cases (normal / OpenAI down / GIPHY down / both down) still return a result.
 
 ## Tech Stack
 
 - Python, LangChain (`langchain-core`, `langchain-openai`)
 - OpenAI API
-- GIPHY API, CATAAS
+- GIPHY API
 
 ## Getting Started
 
@@ -110,7 +112,7 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 - [x] Step 1. Keyword mood classifier (no LLM)
 - [x] Step 2. LLM mood classifier
 - [x] Step 3. Combine mood + caption + GIF
-- [ ] Step 4. Retry / fallback
+- [x] Step 4. Retry / fallback
 - [ ] Step 5. (Optional) Caption streaming
 - [ ] Step 6. (Optional) Blog demo
 - [ ] Step 7. Retrospective
@@ -128,4 +130,3 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 ## Credits
 
 - GIFs: [GIPHY](https://giphy.com/) (Powered by GIPHY)
-- Cat photos: [CATAAS](https://cataas.com/)
