@@ -153,7 +153,7 @@ It prints a dictionary like this. The caption and GIF may change on every run.
 - [x] Step 3. Combine mood + caption + GIF
 - [x] Step 4. Retry / fallback
 - [x] Web page (FE) + API server (BE)
-- [ ] Deploy (Render + GitHub Pages)
+- [x] Deploy (Render + GitHub Pages)
 - [ ] Step 5. (Optional) Caption streaming
 - [ ] Step 6. (Optional) Blog demo
 - [ ] Step 7. Retrospective

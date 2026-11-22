@@ -153,7 +153,7 @@ python main.py
 - [x] Step 3. 감정 + 캡션 + GIF 합치기
 - [x] Step 4. retry / fallback
 - [x] 웹 화면(FE) + API 서버(BE)
-- [ ] 배포 (Render + GitHub Pages)
+- [x] 배포 (Render + GitHub Pages)
 - [ ] Step 5. (선택) 캡션 스트리밍
 - [ ] Step 6. (선택) 블로그 데모
 - [ ] Step 7. 회고
