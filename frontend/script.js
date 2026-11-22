@@ -42,6 +42,7 @@ const I18N = {
     digInBtn: "yeah let's dig in",
     cloud: "thx 4 ur\nattention",
     madeBy: "★ made by:",
+    repoLink: "★ go to repo:",
     exitTitle: "WHERE DO YOU THINK\nYOU'RE GOING?",
     stayBtn: "ok ok i'll stay 😿",
     inputLabel: "How do you feel?",
@@ -81,6 +82,7 @@ const I18N = {
     digInBtn: "해볼게요 드가자",
     cloud: "많은 관심\n감사해용",
     madeBy: "★ 만든 사람:",
+    repoLink: "★ 레포 가기:",
     exitTitle: "어딜\n도망가?",
     stayBtn: "알겠어요 있을게요 😿",
     inputLabel: "지금 기분",
@@ -418,12 +420,12 @@ function popAt(x, y) {
   document.body.appendChild(pop);
 }
 
-// 그 시절 "마우스 꾸미기" 스크립트처럼: 🔥 이모지가 줄줄이 따라오기
+// 마우스를 따라오는 무지개 리본 꼬리
 const trailCanvas = $("#trail");
 const ctx = trailCanvas.getContext("2d");
-const TRAIL_EMOJI = "🔥";
-const MAX_POINTS = 32;   // 꼬리 길이 (프레임 수)
-const GAP = 4;           // 몇 프레임마다 🔥 하나씩 찍을지
+const TRAIL_COLORS = ["#ff4d4d", "#ffa64d", "#ffe066", "#5ce65c", "#4da6ff", "#9966ff"];   // 빨주노초파보
+const BAND = 4;          // 무지개 한 줄의 두께(px)
+const MAX_POINTS = 26;   // 꼬리 길이 (프레임 수)
 
 const pointer = { x: 0, y: 0, active: false };
 let trailPoints = [];
@@ -441,16 +443,26 @@ function drawTrail() {
   if (trailPoints.length > MAX_POINTS) trailPoints.length = MAX_POINTS;
 
   ctx.clearRect(0, 0, innerWidth, innerHeight);
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+  ctx.lineCap = "round";    // 선 끝을 둥글게
+  ctx.lineJoin = "round";   // 꺾이는 곳도 둥글게
+  ctx.lineWidth = BAND;
 
-  // 꼬리 끝(작은 불)부터 그려야 앞쪽(큰 불)이 위에 겹쳐 보여요
-  const last = Math.floor((trailPoints.length - 1) / GAP) * GAP;
-  for (let i = last; i >= 0; i -= GAP) {
-    const point = trailPoints[i];
-    ctx.font = `${24 - (i / MAX_POINTS) * 16}px serif`;
-    ctx.fillText(TRAIL_EMOJI, point.x, point.y + 16);
+  // 점과 점 사이를 선으로 이어서 리본 만들기 (색마다 위아래로 조금씩 띄워서 6줄)
+  for (let i = 0; i < trailPoints.length - 1; i++) {
+    const a = trailPoints[i];
+    const b = trailPoints[i + 1];
+    ctx.globalAlpha = 1 - i / trailPoints.length;   // 끝으로 갈수록 투명하게
+
+    TRAIL_COLORS.forEach((color, c) => {
+      const offset = (c - (TRAIL_COLORS.length - 1) / 2) * BAND;
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y + offset);
+      ctx.lineTo(b.x, b.y + offset);
+      ctx.stroke();
+    });
   }
+  ctx.globalAlpha = 1;
 
   requestAnimationFrame(drawTrail);   // 다음 프레임에 또 그리기 (1초에 약 60번)
 }
